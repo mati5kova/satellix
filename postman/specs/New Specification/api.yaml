@@ -1,0 +1,84 @@
+openapi: "3.0.0"
+info:
+  contact:
+    name: Matevž Kovačič
+    email: mk98008@student.uni-lj.si
+  version: "1.0.0"
+  title: "Satellix API"
+  description: "API for the Satellix satellite managment platform"
+
+tags:
+  - name: Authentication
+    description: "User authentication and session managment"
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: "Authenticate user"
+      description: "Authenticates user using their email address and password. Returns JWT access token on successfull authentication."
+
+      operationId: loginUser
+
+      security: []
+
+      requestBody:
+        required: true
+        description: "User credentials"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: "Authentication successfull"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Invalid email and/or password"
+        "429":
+          description: "Too many login requests"
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: "User email address"
+          example: "user@example.com"
+        password:
+          type: string
+          format: password
+          description: "User password"
+          minLength: 8
+          example: "VerYsTRongPaSs123!"
+    LoginResponse:
+      type: object
+      required:
+        - accessToken
+        - tokenType
+        - expiresIn
+      properties:
+        accessToken:
+          type: string
+          description: "JWT access token"
+        tokenType:
+          type: string
+          enum:
+            - Bearer
+          example: "Bearer"
+        expiresIn:
+          type: integer
+          description: "Token validity in seconds"
+          example: 3600
